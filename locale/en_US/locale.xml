@@ -35,6 +35,10 @@
 	<message key="plugins.generic.vgWort.manager.settings.vgWortUserIdRequired">The VG Wort username is required.</message>
 	<message key="plugins.generic.vgWort.manager.settings.vgWortUserPasswordRequired">The VG Wort password is required.</message>
 	<message key="plugins.generic.vgWort.manager.settings.vgWortPixelTagMinRequired">The minimum of the available pixel tags is required and should be a number from 1 to 10.</message>
+	
+	<message key="plugins.generic.vgWort.manager.settings.pubFormat">Exclude publication formats</message>
+	<message key="plugins.generic.vgWort.manager.settings.pubFormat.description">Please enter publication formats that shall NOT get a VG Wort counter.</message>
+	
 
 	<!-- author metadata -->
 	<message key="plugins.generic.vgWort.cardNo">VG Wort Card Number</message>

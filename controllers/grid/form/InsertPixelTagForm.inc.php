@@ -162,24 +162,27 @@ class InsertPixelTagForm extends Form {
 		$pixelTagId = $pixelTagDao->insertObject($pixelTag);
 		
 		// write redirect to vg wort with book in .htaccess 
-		$this->writeInHtaccess($request, $this->getData('submissionId'), $this->getData('publicCode'));
+		$this->writeInHtaccess($request, $contextId, $this->getData('submissionId'), $this->getData('publicCode'));
 		
 	}
 	
 	
-	/*
+	/* TODO
 	* Update the urls of a book in .htaccess. 
 	* @param $pixelTagId int id of the pixel tag 
 	*/
-	function updateBookInHtaccess($pixelTagId){
+	function updateBookInHtaccess($request, $contextId, $pixelTagId){
 		
+		// get pixelTag object by Id
 		$pixelTag = getPixelTag($pixelTagId);
+		// get the id of the associated submission
 		$sumissionId = $pixelTag->getSubmissionId();
+		// get the public code of the pixel tag
 		$vgWortPublicCode = $pixelTag->getPublicCode();
 		
-		
-		$this->writeInHtaccess($request, $sumissionId, $vgWortPublicCode);
-		
+		// write new line in htaccess
+		// TODO: delete old line
+		$this->writeInHtaccess($request, $contextId, $sumissionId, $vgWortPublicCode);
 		
 	}
 	
@@ -191,38 +194,29 @@ class InsertPixelTagForm extends Form {
 	* @param $vgWortPublicCode int public code of the vg wort pixel
 	* @return string
 	*/
-	function writeInHtaccess($request, $submissionId, $vgWortPublicCode){
-		// write data in htaccess file 
-		
-		// open htaccess file or create one if not existent
-		import('lib.pkp.classes.file.FileManager');
-		$fileMgr = new FileManager();
-				
-		// find section for pixels or create one if not existent
-		// TODO
-		
-		// create rewrite rule with given variables and urls of this book 
-		
-		// load helpers and define variables
+	function writeInHtaccess($request, $contextId, $submissionId, $vgWortPublicCode){
+
+		// load helpers
+		import('lib.pkp.classes.file.FileManager'); // file manager
+		$fileMgr = new FileManager(); // file manager
 		$submissionFileDao = DAORegistry::getDAO('SubmissionFileDAO');
 		$submissionDAO = DAORegistry::getDAO('PublishedMonographDAO');
 		$dispatcher = PKPApplication::getDispatcher();
+		$vgWortPlugin = PluginRegistry::getPlugin('generic', VGWORT_PLUGIN_NAME); // settings
 		
+		// define variables
 		$submission = $submissionDAO->getById($submissionId);
-		$submissionId = $submission->getId();
-	
 		$publicationFormats = $submission->getPublicationFormats();
-		
-		$rewriteRules = "RewriteEngine On \n";
+		$excludedPubFormat = $vgWortPlugin->getSetting($contextId, 'vgWortPubFormat'); // get names of excluded publicationFormats from settings
 		
 		// write title of submission for overview
-		$rewriteRules .= "# ".$submissionId." ".$submission->getLocalizedTitle()."\n";
+		$rewriteRules = "# ".$submissionId." ".$submission->getLocalizedTitle()."\n";
 		
-		// go through all publicationFormats - handle only publicationFormats that are named "Complete book" and are available
-		// TODO: get names of publicationFormats from settings
+		// go through all publicationFormats 
 		foreach ($publicationFormats as $publicationFormat){
-			// 
-			if ($publicationFormat->getIsAvailable() && $publicationFormat->getLocalizedName()!=="Bibliography"){
+			
+			// handle all publicationFormats but $excludedPubFormat that and are available
+			if ($publicationFormat->getIsAvailable() && $publicationFormat->getLocalizedName()!==$excludedPubFormat){
 				
 				// get the id of the publicationFormat
 				$publicationFormatId = $publicationFormat->getId();
@@ -248,20 +242,32 @@ class InsertPixelTagForm extends Form {
 					$rewriteRules .= "RewriteRule ^".$shortUrl." ".$vgWortUrl."\n";
 					
 				}
-
 			}
 		} 
 		
-		// write rewriteRules to file .htaccess
-		$fileMgr->writeFile(".htaccess", $rewriteRules);
-	
+		/**
+		* write to file
+		*/
+		
+		// open .htaccess file or create one if not existent
+		if(!$fileMgr->fileExists(".htaccess", 'file')){
+			
+			// create .htaccess and write first line and rewriteRules to file 
+			$fileMgr->writeFile(".htaccess", "RewriteEngine On \n" . $rewriteRules);
+			
+		}else{
+			
+			// write rewriteRules to file .htaccess
+			$file = fopen(".htaccess", "a");
+			fwrite($file, $rewriteRules);
+			
+		}
+		
 		// test output
 		//	$fileMgr->writeFile("debug_.txt", $rewriteRule);
 		
-		
 	}
 	
-
 }
 
 ?>

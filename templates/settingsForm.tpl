@@ -37,6 +37,15 @@
 			{fbvElement type="select" name="vgWortEditors[]" id="vgWortEditors" from=$editors selected=$vgWortEditors translate=false disabled=$readOnly multiple="multiple" inline=true}
 		{/fbvFormSection}
 	{/fbvFormArea}
+	
+	{fbvFormArea id="vgWortPublicationFormats" title="plugins.generic.vgWort.manager.settings.pubFormat" class="border"}
+		{fbvFormSection description="plugins.generic.vgWort.manager.settings.pubFormat.description"}
+		{/fbvFormSection}
+		{fbvFormSection for="vgWortPubFormat"}
+			{fbvElement type="text" name="vgWortPubFormat" id="vgWortPubFormat" value=$vgWortPubFormat}
+		{/fbvFormSection}
+	{/fbvFormArea}
+	
 	{fbvFormArea id="vgWortNotification" title="plugins.generic.vgWort.manager.settings.vgWortNotification" class="border"}
 		{fbvFormSection description="plugins.generic.vgWort.manager.settings.vgWortNotification.description"}
 		{/fbvFormSection}

@@ -102,6 +102,7 @@ class VGWortSettingsForm extends Form {
 			'vgWortEditors' => 'object',
 			'vgWortUserId' => 'string',
 			'vgWortUserPassword' => 'string',
+			'vgWortPubFormat' => 'string',
 			'vgWortPixelTagMin' => 'int'
 		);
 	}
